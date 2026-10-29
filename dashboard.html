@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StockPro - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard-layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .chart-box-card, .alert-box-card { background: white; border-radius: 12px; padding: 1.75rem; border: 1px solid var(--border-color); }
+        .bar-chart-visual { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; }
+        .bar-item { width: 11%; background-color: #0d7a5f; border-radius: 4px 4px 0 0; }
+        .alert-item-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f3f4f6; }
+        .alert-badge-count { background-color: #fee2e2; color: #991b1b; padding: 0.2rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">StockPro</div>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="stock.html">Stock</a>
+        <a href="add-product.html">Add Product</a>
+        <a href="products.html">Products</a>
+        <a href="report.html">Report</a>
+    </div>
+    <div class="main-wrapper">
+        <div class="content-header"><h1>Dashboard</h1></div>
+        <div class="content-body">
+            <div class="metrics-grid">
+                <div class="metric-card"><p>Total products</p><h3 id="dash-total-products">5</h3></div>
+                <div class="metric-card"><p>Low stock items</p><h3 id="dash-low-stock-items">2</h3></div>
+                <div class="metric-card"><p>Stock value</p><h3 id="dash-stock-value">$8,117</h3></div>
+                <div class="metric-card"><p>Orders today</p><h3>56</h3></div>
+            </div>
+            <div class="dashboard-layout-grid">
+                <div class="chart-box-card">
+                    <h3>Stock movement (weekly)</h3>
+                    <div class="bar-chart-visual">
+                        <div class="bar-item" style="height: 42%;"></div>
+                        <div class="bar-item" style="height: 62%;"></div>
+                        <div class="bar-item" style="height: 32%;"></div>
+                        <div class="bar-item" style="height: 82%;"></div>
+                        <div class="bar-item" style="height: 52%;"></div>
+                        <div class="bar-item" style="height: 92%;"></div>
+                        <div class="bar-item" style="height: 48%;"></div>
+                    </div>
+                </div>
+                <div class="alert-box-card">
+                    <h3>Low stock alerts</h3>
+                    <div id="dash-low-stock-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function renderLiveDashboard() {
+            const products = JSON.parse(getProducts());
+            let totalProducts = products.length;
+            let lowStockCount = 0;
+            let totalValue = 0;
+            const alertListContainer = document.getElementById('dash-low-stock-list');
+            if (alertListContainer) alertListContainer.innerHTML = '';
+            
+            products.forEach(p => {
+                totalValue += (p.qty * p.price);
+                if (p.qty <= p.minAlert) {
+                    lowStockCount++;
+                    if (alertListContainer) {
+                        alertListContainer.innerHTML += `
+                            <div class="alert-item-row"><span>${p.name}</span><span class="alert-badge-count">${p.qty}</span></div>
+                        `;
+                    }
+                }
+            });
+            document.getElementById('dash-total-products').innerText = totalProducts;
+            document.getElementById('dash-low-stock-items').innerText = lowStockCount;
+            document.getElementById('dash-stock-value').innerText = '$' + totalValue.toLocaleString();
+        }
+        window.addEventListener('DOMContentLoaded', renderLiveDashboard);
+    </script>
+</body>
+</html>

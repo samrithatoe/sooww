@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StockPro - Stock Management</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stock-filter-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .filter-controls-left { display: flex; gap: 0.75rem; flex: 1; }
+        .search-input-exact { width: 100%; max-width: 320px; padding: 0.65rem 1rem; border: 1px solid #d1d5db; border-radius: 8px; }
+        .category-select-exact { padding: 0.65rem 1rem; border: 1px solid #d1d5db; border-radius: 8px; color: #374151; }
+        .buttons-group-right { display: flex; gap: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">StockPro</div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="stock.html" class="active">Stock</a>
+        <a href="add-product.html">Add Product</a>
+        <a href="products.html">Products</a>
+        <a href="report.html">Report</a>
+    </div>
+    <div class="main-wrapper">
+        <div class="content-header"><h1>Stock Management</h1></div>
+        <div class="content-body">
+            <div class="table-container-box">
+                <div class="stock-filter-bar">
+                    <div class="filter-controls-left">
+                        <input type="text" id="stock-search-input" class="search-input-exact" placeholder="Search product or SKU" onkeyup="filterStockTable()">
+                        <select id="stock-category-select" class="category-select-exact" onchange="filterStockTable()">
+                            <option value="All categories">All categories</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Peripherals">Peripherals</option>
+                            <option value="Displays">Displays</option>
+                        </select>
+                    </div>
+                    <div class="buttons-group-right">
+                        <button class="btn-stock-in" onclick="openMovementModal('in')">Stock In</button>
+                        <button class="btn-stock-out" onclick="openMovementModal('out')">Stock Out</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Product</th><th>SKU</th><th>Category</th><th>Qty</th><th>Price</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="stock-management-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="stock-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header"><h2>Record stock movement</h2><button class="close-modal-btn" onclick="closeStockModal()">&times;</button></div>
+            <form id="modal-stock-form">
+                <div class="modal-body">
+                    <div class="form-group"><label>Product *</label><select id="modal-product-select" class="form-control" required></select></div>
+                    <div class="form-group"><label>Movement type *</label><select id="modal-movement-type" class="form-control" required><option value="in">Stock In</option><option value="out">Stock Out</option></select></div>
+                    <div class="form-group"><label>Quantity *</label><input type="number" id="modal-quantity" class="form-control" min="1" required></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn-secondary" onclick="closeStockModal()">Cancel</button><button type="submit" class="btn-stock-in">Save movement</button></div>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function renderStockManagementUI() {
+            const tableBody = document.getElementById('stock-management-tbody');
+            const products = JSON.parse(getProducts());
+            tableBody.innerHTML = '';
+            products.forEach(p => {
+                const isLow = p.qty <= p.minAlert;
+                tableBody.innerHTML += `
+                    <tr><td>${p.name}</td><td style="color:#4b5563;">${p.sku}</td><td style="color:#4b5563;">${p.category}</td><td>${p.qty}</td><td>$${p.price.toFixed(2)}</td><td><span class="badge ${isLow?'low-stock':'in-stock'}">${isLow?'Low stock':'In stock'}</span></td></tr>
+                `;
+            });
+        }
+        function filterStockTable() {
+            const searchVal = document.getElementById('stock-search-input').value.toLowerCase();
+            const catVal = document.getElementById('stock-category-select').value;
+            const tableBody = document.getElementById('stock-management-tbody');
+            const products = JSON.parse(getProducts());
+            tableBody.innerHTML = '';
+            products.forEach(p => {
+                if ((p.name.toLowerCase().includes(searchVal) || p.sku.toLowerCase().includes(searchVal)) && (catVal === 'All categories' || p.category === catVal)) {
+                    const isLow = p.qty <= p.minAlert;
+                    tableBody.innerHTML += `
+                        <tr><td>${p.name}</td><td>${p.sku}</td><td>${p.category}</td><td>${p.qty}</td><td>$${p.price.toFixed(2)}</td><td><span class="badge ${isLow?'low-stock':'in-stock'}">${isLow?'Low stock':'In stock'}</span></td></tr>
+                    `;
+                }
+            });
+        }
+        function openMovementModal(type) {
+            document.getElementById('stock-modal').style.display = 'flex';
+            document.getElementById('modal-movement-type').value = type;
+            const select = document.getElementById('modal-product-select');
+            select.innerHTML = '';
+            JSON.parse(getProducts()).forEach(p => { select.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
+        }
+        function closeStockModal() { document.getElementById('stock-modal').style.display = 'none'; }
+        document.getElementById('modal-stock-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('modal-product-select').value);
+            const type = document.getElementById('modal-movement-type').value;
+            const qty = parseInt(document.getElementById('modal-quantity').value);
+            let products = JSON.parse(getProducts());
+            const idx = products.findIndex(p => p.id === id);
+            if(idx !== -1) {
+                if(type === 'in') products[idx].qty += qty;
+                else { if(products[idx].qty < qty) { alert("Not enough stock!"); return; } products[idx].qty -= qty; }
+                saveProducts(products); renderStockManagementUI(); closeStockModal();
+            }
+        });
+        window.addEventListener('DOMContentLoaded', renderStockManagementUI);
+    </script>
+</body>
+</html>

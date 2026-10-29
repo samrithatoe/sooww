@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPro - Products</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* រចនាបថបន្ថែមដើម្បីឱ្យផ្ទៃតារាង និងប៊ូតុងដូចរូបភាពគំរូ ១០០% */
+        .products-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container-box {
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .table-footer-info {
+            padding: 1.1rem 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 400;
+            background-color: #ffffff;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        /* ស្ទីលសម្រាប់ប៊ូតុង + Add product ពណ៌បៃតងចាស់ជ្រុងមូល */
+        .btn-add-product {
+            background-color: #086e55; /* ពណ៌បៃតងចាស់ដូចក្នុងរូបភាព */
+            color: white;
+            border: none;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add-product:hover {
+            background-color: #065441;
+        }
+
+        /* កែសម្រួលរចនាបថតារាងបន្ថែម */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1.1rem 1rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        th {
+            color: #6b7280;
+            font-weight: 500;
+            background-color: #ffffff;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        td {
+            color: #111827;
+        }
+
+        .text-muted-col {
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- របារចំហៀងឆ្វេង (Sidebar) ដូចរូបថតគំរូ -->
+    <div class="sidebar">
+        <div class="logo">StockPro</div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="stock.html">Stock</a>
+        <a href="add-product.html">Add Product</a>
+        <a href="products.html" class="active">Products</a>
+        <a href="report.html">Report</a>
+    </div>
+
+    <!-- ផ្នែកមាតិកាខាងស្តាំ -->
+    <div class="main-wrapper">
+        <div class="content-header">
+            <h1 style="font-size: 1.6rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Products</h1>
+        </div>
+
+        <div class="content-body">
+            
+            <!-- របារស្វែងរក និង ប៊ូតុងសកម្មភាពខាងលើតារាង -->
+            <div class="products-filter-bar">
+                <div class="search-container-box">
+                    <input type="text" id="products-search" class="search-input" placeholder="Search products" onkeyup="filterProductsTable()">
+                </div>
+                <div>
+                    <button class="btn-add-product" onclick="window.location.href='add-product.html'">+ Add product</button>
+                </div>
+            </div>
+
+            <!-- ផ្ទាំងប្រអប់តារាងបញ្ជីផលិតផល (Products Table Box) -->
+            <div class="table-container-box" style="padding: 0; overflow: hidden;">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-list-tbody">
+                            <!-- ទិន្នន័យផលិតផលនឹងត្រូវលោតចេញមកទីនេះដោយស្វ័យប្រវត្តិតាម JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- ផ្នែក Footer បង្ហាញចំនួនទិន្នន័យខាងក្រោមតារាង -->
+                <div class="table-footer-info" id="products-count-label">
+                    Showing 5 of 1,248 products
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ភ្ជាប់ទៅកាន់ Logic Script រួមដើម្បីគ្រប់គ្រងទិន្នន័យ -->
+    <script src="script.js"></script>
+    <script>
+        // អនុគមន៍បង្ហាញបញ្ជីផលិតផលឱ្យស្របតាមទម្រង់រូបភាព UI ដើម ១百分百
+        function renderProductsListUI() {
+            const tableBody = document.getElementById('products-list-tbody');
+            const countLabel = document.getElementById('products-count-label');
+            if (!tableBody) return;
+
+            // ទាញយកទិន្នន័យផលិតផលពី localStorage
+            const products = JSON.parse(getProducts());
+            tableBody.innerHTML = '';
+
+            products.forEach(p => {
+                const isLow = p.qty <= p.minAlert;
+                const statusText = isLow ? 'Low stock' : 'In stock';
+                const badgeClass = isLow ? 'low-stock' : 'in-stock';
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 400;">${p.name}</td>
+                        <td class="text-muted-col">${p.sku}</td>
+                        <td class="text-muted-col">${p.category}</td>
+                        <td>${p.qty}</td>
+                        <td>$${p.price.toFixed(2)}</td>
+                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+
+            if (countLabel) {
+                countLabel.innerText = `Showing ${products.length} of ${products.length} products`;
+            }
+        }
+
+        // មុខងារចម្រោះ និងស្វែងរកផលិតផលក្នុងតារាង (Real-time Search)
+        function filterProductsTable() {
+            const searchVal = document.getElementById('products-search').value.toLowerCase();
+            const tableBody = document.getElementById('products-list-tbody');
+            const countLabel = document.getElementById('products-count-label');
+            const products = JSON.parse(getProducts());
+            
+            tableBody.innerHTML = '';
+            let currentShown = 0;
+
+            products.forEach(p => {
+                if (p.name.toLowerCase().includes(searchVal) || p.sku.toLowerCase().includes(searchVal) || p.category.toLowerCase().includes(searchVal)) {
+                    currentShown++;
+                    const isLow = p.qty <= p.minAlert;
+                    const statusText = isLow ? 'Low stock' : 'In stock';
+                    const badgeClass = isLow ? 'low-stock' : 'in-stock';
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 400;">${p.name}</td>
+                            <td class="text-muted-col">${p.sku}</td>
+                            <td class="text-muted-col">${p.category}</td>
+                            <td>${p.qty}</td>
+                            <td>$${p.price.toFixed(2)}</td>
+                            <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (countLabel) {
+                countLabel.innerText = `Showing ${currentShown} of ${products.length} products`;
+            }
+        }
+
+        // ដំណើរការបង្កើតផ្ទៃតារាងពេលបើកទំព័រដំបូង
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProductsListUI();
+        });
+    </script>
+</body>
+</html>

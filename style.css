@@ -1,0 +1,364 @@
+/* ==========================================================================
+   1. GLOBAL VARIABLES & RESET STYLES
+   ========================================================================== */
+:root {
+    /* ពណ៌ចម្បងៗតាមច្បាប់ដើមនៃ Mockups */
+    --bg-dark: #111e35;         /* ពណ៌ខៀវចាស់ក្រម៉ៅរបស់ Sidebar & Auth Left */
+    --active-tab-bg: #0d7a5f;   /* ពណ៌បៃតង Teal របស់ Tab ដែលកំពុងបើក */
+    --primary-teal: #086e55;    /* ពណ៌បៃតងចាស់របស់ប៊ូតុងសកម្មភាពចម្បង (Stock In, Login) */
+    --primary-hover: #065441;   /* ពណ៌ពេល Hover លើប៊ូតុងបៃតង */
+    
+    /* ពណ៌អក្សរ និងបន្ទាត់គែម */
+    --text-main: #111827;       /* ពណ៌អក្សរចម្បង (ខ្មៅដិត) */
+    --text-muted: #6b7280;     /* ពណ៌អក្សររាយរាប់ (ប្រផេះ) */
+    --border-color: #e5e7eb;   /* ពណ៌បន្ទាត់កាត និងបន្ទាត់តារាង */
+    
+    /* ពណ៌ Badges ស្ថានភាពស្តុក */
+    --badge-in-stock: #e6f6f1;
+    --text-in-stock: #0f765e;
+    --badge-low-stock: #fdf2e9;
+    --text-low-stock: #ca5723;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #f8fafc;
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   2. SYSTEM LAYOUT Architecture (Sidebar & Content Area)
+   ========================================================================== */
+.sidebar {
+    width: 240px;
+    background-color: var(--bg-dark);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+    flex-shrink: 0;
+}
+
+.sidebar .logo {
+    padding: 0 2rem 2.5rem 2rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: white;
+}
+
+.sidebar a {
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.85rem 2rem;
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.sidebar a:hover {
+    color: white;
+}
+
+.sidebar a.active {
+    background-color: var(--active-tab-bg);
+    color: white;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin-right: 1rem;
+}
+
+/* ផ្ទៃមាតិកាខាងស្តាំ */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f4f6; /* ផ្ទៃខាងក្រោយប្រផេះខ្ចីដូចរូបភាព */
+    overflow-x: hidden;
+}
+
+.content-header {
+    padding: 2rem 2.5rem 1rem 2.5rem;
+    background: #f3f4f6;
+}
+
+.content-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.content-body {
+    padding: 1rem 2.5rem 2.5rem 2.5rem;
+    flex: 1;
+}
+
+/* ប្រអប់កាតសរុបព័ត៌មាន (White Container Box) */
+.table-container-box {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   3. DASHBOARD PAGE COMPONENTS (Metric Cards & Charts)
+   ========================================================================== */
+/* ប្រអប់កាតទាំង ៤ រៀបដេកទន្ទឹមគ្នា (ស្របតាមរូបភាពទី២) */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.metric-card p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+.metric-card h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+}
+
+/* គំនូសតាងរបារ (Bar Chart Visuals) */
+.bar-chart-visual {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 180px;
+    padding: 1rem 0.5rem 0 0.5rem;
+}
+
+.bar-item {
+    width: 11%;
+    background-color: var(--active-tab-bg);
+    border-radius: 4px 4px 0 0;
+}
+
+/* ==========================================================================
+   4. TABLES, INPUTS & FILTERS COMPONENTS
+   ========================================================================== */
+/* របារចម្រោះ និងប្រអប់ស្វែងរកខាងលើតារាង */
+.search-input {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
+}
+
+.category-select {
+    padding: 0.65rem 2.5rem 0.65rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #374151;
+    background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+    background-size: 1rem;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* ទម្រង់តារាង */
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 1.1rem 1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+th {
+    color: var(--text-muted);
+    font-weight: 500;
+    background-color: #ffffff;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+td {
+    color: #111827;
+}
+
+/* ស្ថានភាព Badges */
+.badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge.in-stock {
+    background-color: var(--badge-in-stock);
+    color: var(--text-in-stock);
+}
+
+.badge.low-stock {
+    background-color: var(--badge-low-stock);
+    color: var(--text-low-stock);
+}
+
+/* ==========================================================================
+   5. BUTTONS VARIATIONS
+   ========================================================================== */
+/* ប៊ូតុងពណ៌បៃតងចាស់ (Stock In, Login, Save Product) */
+.btn-stock-in, .btn-add-product, .btn-save-prod {
+    background-color: var(--primary-teal);
+    color: white;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+}
+
+.btn-stock-in:hover, .btn-add-product:hover, .btn-save-prod:hover {
+    background-color: var(--primary-hover);
+}
+
+/* ប៊ូតុងពណ៌សគែមប្រផេះ (Stock Out, Export PDF, Cancel) */
+.btn-stock-out, .btn-export-pdf, .btn-cancel, .btn-secondary {
+    background-color: white;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.btn-stock-out:hover, .btn-export-pdf:hover, .btn-cancel:hover, .btn-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+/* ==========================================================================
+   6. INTERACTIVE MODAL DIALOGS
+   ========================================================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container {
+    background: white;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: modalFadeIn 0.25s ease-out;
+}
+
+.modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background: #f9fafb;
+}
+
+/* សម្រាប់គ្រប់គ្រង Form Group នៅក្នង Modal ឬទម្រង់បែបបទ */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

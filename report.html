@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPro - Inventory Report</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* រចនាបថបន្ថែមដើម្បីតម្រឹមប្លង់ទំព័ររបាយការណ៍ឱ្យដូចរូបភាពគំរូ */
+        .report-chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .report-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .report-chart-header h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* ប៊ូតុង Export PDF ពណ៌សគែមប្រផេះអក្សរខ្មៅដិត */
+        .btn-export-pdf {
+            background-color: white;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            padding: 0.55rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-export-pdf:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        /* ប្លង់របារគំនូសតាងប្រចាំខែ */
+        .monthly-chart-visual {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 200px;
+            padding: 0 1rem;
+        }
+
+        .monthly-bar-group {
+            width: 12%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .monthly-bar {
+            width: 100%;
+            background-color: #0d7a5f; /* ពណ៌បៃតងចាស់ដូចក្នុងរូបភាព */
+            border-radius: 4px;
+            transition: height 0.3s ease;
+        }
+
+        .month-label {
+            color: #4b5563;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: -1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- របារចំហៀងឆ្វេង (Sidebar) ដូចរូបថតគំរូ -->
+    <div class="sidebar">
+        <div class="logo">StockPro</div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="stock.html">Stock</a>
+        <a href="add-product.html">Add Product</a>
+        <a href="products.html">Products</a>
+        <a href="report.html" class="active">Report</a>
+    </div>
+
+    <!-- ផ្នែកមាតិកាខាងស្តាំ -->
+    <div class="main-wrapper">
+        <div class="content-header">
+            <h1 style="font-size: 1.6rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Inventory Report</h1>
+        </div>
+
+        <div class="content-body">
+            
+            <!-- ផ្នែកសូចនាករវាស់វែងខាងលើ (Top Metric Cards រៀបដេកទន្ទឹមគ្នា ដូចរូបភាព) -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <p>Total in</p>
+                    <h3>3,420</h3>
+                </div>
+                <div class="metric-card">
+                    <p>Total out</p>
+                    <h3>2,980</h3>
+                </div>
+                <div class="metric-card">
+                    <p>Stock value</p>
+                    <h3 id="report-stock-value">$48,320</h3>
+                </div>
+                <div class="metric-card">
+                    <p>Low stock</p>
+                    <h3>23</h3>
+                </div>
+            </div>
+
+            <!-- ផ្នែកប្រអប់គំនូសតាងលំហូរស្តុកប្រចាំខែ (Monthly stock in vs out) -->
+            <div class="report-chart-container">
+                
+                <div class="report-chart-header">
+                    <h3>Monthly stock in vs out</h3>
+                    <!-- មុខងារចុចដោនឡូដជា PDF តាមប្រព័ន្ធ Browser Print -->
+                    <button class="btn-export-pdf" onclick="window.print()">Export PDF</button>
+                </div>
+
+                <div class="monthly-chart-visual">
+                    <!-- ខែមករា -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 90px;"></div>
+                        <span class="month-label">Jan</span>
+                    </div>
+                    <!-- ខែកុម្ភៈ -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 120px;"></div>
+                        <span class="month-label">Feb</span>
+                    </div>
+                    <!-- ខែមីនា -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 105px;"></div>
+                        <span class="month-label">Mar</span>
+                    </div>
+                    <!-- ខែមេសា -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 150px;"></div>
+                        <span class="month-label">Apr</span>
+                    </div>
+                    <!-- ខែឧសភា -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 135px;"></div>
+                        <span class="month-label">May</span>
+                    </div>
+                    <!-- ខែមិថុនា -->
+                    <div class="monthly-bar-group">
+                        <div class="monthly-bar" style="height: 180px;"></div>
+                        <span class="month-label">Jun</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ភ្ជាប់ទៅកាន់ Logic Script រួមដើម្បីទាញយកតម្លៃស្តុកសរុបជាក់ស្តែង -->
+    <script src="script.js"></script>
+    <script>
+        function renderLiveReportValue() {
+            const products = JSON.parse(getProducts());
+            
+            if (products && products.length > 0) {
+                let totalValue = 0;
+                products.forEach(p => {
+                    totalValue += (p.qty * p.price);
+                });
+
+                // បើកាលណាមានទិន្នន័យបន្ថែមថ្មីក្នុង LocalStorage វានឹងធ្វើបច្ចុប្បន្នភាពតម្លៃស្តុកសរុបភ្លាមៗ
+                const stockValElement = document.getElementById('report-stock-value');
+                if (stockValElement) {
+                    stockValElement.innerText = '$' + totalValue.toLocaleString(undefined, {
+                        minimumFractionDigits: 0, 
+                        maximumFractionDigits: 0
+                    });
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderLiveReportValue();
+        });
+    </script>
+</body>
+</html>

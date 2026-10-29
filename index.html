@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StockPro - Sign In</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; display: block; }
+        .auth-container { display: flex; width: 100vw; height: 100vh; }
+        .auth-left { flex: 1; background-color: #111e35; color: white; display: flex; flex-direction: column; justify-content: center; padding: 0 5rem; }
+        .auth-left h1 { font-size: 2.75rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .auth-left p { color: #94a3b8; font-size: 1.05rem; }
+        .auth-right { flex: 1; display: flex; align-items: center; justify-content: center; background-color: #f8fafc; }
+        .auth-card { background: white; padding: 3rem 2.5rem; border-radius: 12px; width: 100%; max-width: 460px; border: 1px solid var(--border-color); }
+        .btn-login { background-color: #086e55; color: white; border: none; padding: 0.85rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div style="font-size:1.25rem; font-weight:700; margin-bottom:2rem;">StockPro</div>
+            <h1>Know what you have, always.</h1>
+            <p>Inventory, products and reports in one place.</p>
+        </div>
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Sign in</h2>
+                <p style="color:#6b7280; margin-bottom:2rem;">Welcome back. Enter your details.</p>
+                <form onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+                    <div class="form-group"><label>Username</label><input type="text" class="form-control" placeholder="admin" required value="admin"></div>
+                    <div class="form-group"><label>Password</label><input type="password" class="form-control" placeholder="Password" required value="password"></div>
+                    <button type="submit" class="btn-login">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
